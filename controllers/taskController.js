@@ -31,7 +31,7 @@ const createTask = asyncHandler(async (req, res) => {
 
 const getTasks = asyncHandler(async (req, res) => {
   const filter = {};
-  if (req.user.role === 'Member') {
+  if (req.user.role === 'member') {
     filter.assignedTo = req.user._id;
   }
 
@@ -51,7 +51,7 @@ const getTaskById = asyncHandler(async (req, res) => {
     throw new Error('Task not found');
   }
 
-  if (req.user.role === 'Member' && !task.assignedTo._id.equals(req.user._id)) {
+  if (req.user.role === 'member' && !task.assignedTo._id.equals(req.user._id)) {
     res.status(403);
     throw new Error('Access denied');
   }
@@ -66,7 +66,7 @@ const updateTask = asyncHandler(async (req, res) => {
     throw new Error('Task not found');
   }
 
-  if (req.user.role === 'Member' && !task.assignedTo.equals(req.user._id)) {
+  if (req.user.role === 'member' && !task.assignedTo.equals(req.user._id)) {
     res.status(403);
     throw new Error('Access denied');
   }
@@ -77,7 +77,7 @@ const updateTask = asyncHandler(async (req, res) => {
   if (description !== undefined) task.description = description;
   if (status !== undefined) task.status = status;
   if (deadline !== undefined) task.deadline = deadline;
-  if (req.user.role === 'Admin' && assignedTo !== undefined) task.assignedTo = assignedTo;
+  if (req.user.role === 'admin' && assignedTo !== undefined) task.assignedTo = assignedTo;
 
   const updatedTask = await task.save();
   res.json(updatedTask);

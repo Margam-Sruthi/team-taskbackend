@@ -1,6 +1,7 @@
 const authorize = (...roles) => {
+  const normalizedRoles = roles.map((role) => role.toLowerCase());
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+    if (!normalizedRoles.includes(req.user.role)) {
       res.status(403);
       throw new Error('Forbidden: insufficient privileges');
     }

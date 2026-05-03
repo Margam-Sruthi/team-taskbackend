@@ -21,7 +21,7 @@ const createProject = asyncHandler(async (req, res) => {
 
 const getProjects = asyncHandler(async (req, res) => {
   let projects;
-  if (req.user.role === 'Admin') {
+  if (req.user.role === 'admin') {
     projects = await Project.find().populate('members', 'name email role').populate('createdBy', 'name email');
   } else {
     projects = await Project.find({ members: req.user._id }).populate('members', 'name email role').populate('createdBy', 'name email');
@@ -37,7 +37,7 @@ const getProjectById = asyncHandler(async (req, res) => {
     throw new Error('Project not found');
   }
 
-  if (req.user.role !== 'Admin' && !project.members.some((member) => member._id.equals(req.user._id))) {
+  if (req.user.role !== 'admin' && !project.members.some((member) => member._id.equals(req.user._id))) {
     res.status(403);
     throw new Error('Access denied');
   }
@@ -45,9 +45,10 @@ const getProjectById = asyncHandler(async (req, res) => {
   res.json(project);
 });
 
-const addProjectMember = asyncHandler(async (req, res) => {
-  const { memberId } = req.body;
-  const project = await Project.findById(req.params.id);
+const assignProjectMember = asyncHandler(async (req, res) => {
+  const { projectId, memberId } = req.body;
+  const targetProjectId = req.params.id || projectId;
+  const project = await Project.findById(targetProjectId);
 
   if (!project) {
     res.status(404);
@@ -71,4 +72,4 @@ const addProjectMember = asyncHandler(async (req, res) => {
   res.json(project);
 });
 
-module.exports = { createProject, getProjects, addProjectMember, getProjectById };
+module.exports = { createProject, getProjects, assignProjectMember, getProjectById };

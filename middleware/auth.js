@@ -16,11 +16,14 @@ const protect = asyncHandler(async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id).select('-password');
+    console.log('[Auth] JWT decoded payload:', decoded);
+    const userId = decoded.userId || decoded.id;
+    req.user = await User.findById(userId).select('-password');
     if (!req.user) {
       res.status(401);
       throw new Error('User not found');
     }
+    req.user.role = req.user.role?.toLowerCase();
     next();
   } catch (error) {
     res.status(401);
